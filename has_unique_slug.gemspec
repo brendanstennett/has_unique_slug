@@ -7,9 +7,9 @@ Gem::Specification.new do |s|
   s.version     = HasUniqueSlug::VERSION
   s.authors     = ["Brendan Stennett"]
   s.email       = ["brendan@unknowncollective.com"]
-  s.homepage    = ""
-  s.summary     = %q{TODO: Write a gem summary}
-  s.description = %q{TODO: Write a gem description}
+  s.homepage    = "https://github.com/HuffMoody/has_unique_slug"
+  s.summary     = "Generates a unique slug for use as a drop-in replacement for ids."
+  s.description = "Generates a unique slug for use as a drop-in replacement for ids."
 
   s.rubyforge_project = "has_unique_slug"
 
