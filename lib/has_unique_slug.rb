@@ -5,24 +5,37 @@ module HasUniqueSlug
     base.extend ClassMethods
   end
   
+  # Builds a slug from the subject_column unless a block is specified.
+  # If a block is specified, the result of the block is returned.
+  def build_slug(record, subject_column, &block)
+    ( block_given? ? yield(record) : record[subject_column] ).parameterize
+  end
+  
   module ClassMethods
     
-    def has_unique_slug(title_col = "title", slug_col = "slug")
+    def has_unique_slug(*args, &block)
+      
+      options = { :scope => nil }
+      options.merge! args.pop if args.last.is_a? Hash
+      slug_column, subject_column = args
+      slug_column ||= :slug
+      subject_column ||= :title
       
       # Add ActiveRecord Callback
-      before_create do |record|
+      before_save do |record|
         
         # Add a slug if slug doesn't exist
-        if record[slug_col].blank?
-          record[slug_col] = record[title_col].parameterize
-        end
+        slug_prefix = record[slug_column].blank? ? build_slug(record, subject_column, &block) : record[slug_column]
         
         # Ensure the current slug is unique in the database, if not, make it unqiue
-        i = 2
-        while not record.class.where("#{slug_col} = ?", record[slug_col]).count.zero? 
-          record[slug_col] = "#{record[slug_col]}-#{i}"
-          i += 1
-        end  
+        test_slug, i = slug_prefix, 1
+        record_scope = record.new_record? ? record.class.scoped : record.class.where("id != ?", record.id)
+        while not record_scope.where("#{slug_column} = ?", test_slug).count.zero? 
+          test_slug = "#{slug_prefix}-#{(i += 1)}"
+        end
+        
+        # Set the slug
+        record[slug_column] = test_slug
       end
       
       # Add instance methods to objects using has_unique_slug
@@ -33,11 +46,7 @@ module HasUniqueSlug
       # Add configuration mechanism
       instance_eval <<-EOV
         def slug_column
-          '#{slug_col}'
-        end
-        
-        def title_column
-          '#{title_col}'
+          '#{slug_column}'
         end
       EOV
       
