@@ -2,3 +2,4 @@
 .bundle
 Gemfile.lock
 pkg/*
+has_unique_slug/*

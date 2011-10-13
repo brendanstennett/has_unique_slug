@@ -25,7 +25,7 @@ module HasUniqueSlug
       before_save do |record|
         
         # Add a slug if slug doesn't exist
-        slug_prefix = record[slug_column].blank? ? build_slug(record, subject_column, &block) : record[slug_column]
+        slug_prefix = record[slug_column].blank? ? build_slug(record, subject_column, &block) : record[slug_column].parameterize
         
         # Ensure the current slug is unique in the database, if not, make it unqiue
         test_slug, i = slug_prefix, 1
