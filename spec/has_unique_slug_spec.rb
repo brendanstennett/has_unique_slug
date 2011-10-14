@@ -31,7 +31,7 @@ class Standard < ActiveRecord::Base
 end
 
 class Custom < ActiveRecord::Base
-  has_unique_slug :permalink, :name
+  has_unique_slug :column => :permalink, :subject => :name
   
   def self.table_name
     "customs" 
@@ -39,10 +39,10 @@ class Custom < ActiveRecord::Base
 end
 
 class Custom2 < ActiveRecord::Base
-  has_unique_slug {|record| "zcvf #{record.title} zxvf"}
+  has_unique_slug :column => :permalink, :subject => Proc.new {|record| "zcvf #{record.name} zxvf"}
   
   def self.table_name
-    "standards" 
+    "customs" 
   end
 end
 
@@ -89,16 +89,16 @@ describe HasUniqueSlug do
   end
   
   it "should update slugs based on the block if a block is provided" do
-    r = Custom2.create! :title => "Sample Record"
-    r.slug.should == "zcvf-sample-record-zxvf"
+    r = Custom2.create! :name => "Sample Record"
+    r.permalink.should == "zcvf-sample-record-zxvf"
     2.upto 5 do |i|
-      r = Custom2.create! :title => "Sample Record"
-      r.slug.should == "zcvf-sample-record-zxvf-#{i}"
+      r = Custom2.create! :name => "Sample Record"
+      r.permalink.should == "zcvf-sample-record-zxvf-#{i}"
     end
     r = Custom2.last
-    slug = r.slug
+    slug = r.permalink
     r.save.should be_true
-    r.slug.should == slug
+    r.permalink.should == slug
   end
   
 end

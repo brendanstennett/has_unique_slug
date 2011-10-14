@@ -9,42 +9,30 @@ Tested and working on Rails 3.1.x
 
 ## Usage
 
-Assume you have a Post model that has a title and slug column, you can use the following to uniquely parameterize title:
-
 	class Post < ActiveRecord::Base
 		has_unique_slug
 	end
-	
 
-A unique slug will be generated automatically on creation by calling parameterize on title.
-If the generated slug is not unique, a number is added onto the end to ensure uniqueness. The series starts at 2 and increments up by one until a unique slug is found.
-If a slug is already specified, this slug will be used however the above rules still apply for incrementing the slug until a unique one is found.
-Ex. Post 1 has title "Sample Post" which would then generate slug "sample-post"
-    Post 2 has also has title "Sample Post" which then would generate slug "sample-post-2"
+- by default, the column `title` is assumed as the identifier, and `slug` is used to store the unique slug
+- `title.paramterize` is called to generate the slug unless a slug has already been assigned, in which case parameterize is called on the provided slug
+- if a slug is not unique in the database, a suffix is appended on the end in the format "-n" where n starts at 2 and progresses ad infinitum until a unique slug is found.
 
-You can specify which column to use to generate the slug and which column to use to store the slug. Below is the default:
+You can specify which column to use to generate the slug and which column to use to store the slug. For example:
 
 	class Post < ActiveRecord::Base
-	    # the column slug will store the slug, title.parameterize will be called to build the slug
-		has_unique_slug :slug, :title
+		has_unique_slug :column => :permalink, :subject => :name
+		# will store the unique slug in the column `permalink` created from `name`
 	end	
 
-The entire argument list is `has_unique_slug(slug_column, title_column, options, &block)` however there are no options you can pass in at this time.
-
-If only 1 argument is given, use that column to store the slug:
-
-	class Post < ActiveRecord::Base
-		has_unique_slug :permalink		# Uses the permalink column to store the slug
-	end
-
-Optionally, a block can be provided to generate the slug:
+Optionally, a Proc can be used instead of a column name to create the slug:
 
     class Car < ActiveRecord::Base
-        has_unique_slug {|car| "#{car.year} #{car.name}"}
+        has_unique_slug :subject => Proc.new {|car| "#{car.year}-#{car.name}"}
     end
-Note the space: parameterize will be called on the result of the block to ensure the slug is url friendly.
+You do not have to call parameterize on name, this will be done automatically.  (You don't even need to add dash, a space will work fine)
 
-You do not have to modify your controller to get this to work:
+
+You do not have to modify your controller to find records:
 
     class PostsController < ApplicationController
         
@@ -56,11 +44,14 @@ You do not have to modify your controller to get this to work:
         end
     end     
 
-Then you may use all your standard url helpers as normal.
-Ex. If a `post` has a title "Sample Post" and a slug "sample-post", the helper `post_path(post)` will create /posts/sample-post
+All the standard url helper methods will still work since `to_param`  is overridden to output the slug
+    
+    # Ex.
+    post = Post.create! :title => "Sample Post"
+    post_path(post)     # /posts/sample-post
 
 ## TODO:
 
-- Would like to write some tests.
-- Would like to be able to specify scope for uniqueness
-- Possibly consider optimizing the method to ensure uniqueness
+- Add support for scopes
+- Add support for database versioning
+- Consider optimizing the method to ensure a unique slug
