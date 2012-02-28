@@ -16,9 +16,9 @@ module HasUniqueSlug
     def has_unique_slug args = {}
       
       # Setup default options
-      options = { :column => :slug, :subject => :title }
+      options = { :column => :slug, :subject => :title, :scope => nil }
       options.merge! args
-      slug_column, subject_column = options[:column], options[:subject]
+      slug_column, subject_column, scope_column = options[:column], options[:subject], options[:scope]
       
       # Use before_validates otherwise ActiveRecord uniqueness validations on the model will fail.  Uniqueness is already guarneteed.
       # It is not recommend to use a 'validates :slug, :uniqueness => true' validation because that will add unndeeded stress on the
@@ -31,6 +31,13 @@ module HasUniqueSlug
         # Ensure the current slug is unique in the database, if not, make it unqiue
         test_slug, i = slug_prefix, 1
         record_scope = record.new_record? ? record.class.scoped : record.class.where("id != ?", record.id)
+        
+        # Add scope to uniqueness call
+        unless scope_column.nil?
+          record_scope = record_scope.where("#{scope_column} = ?", record[scope_column])
+        end
+        
+        # Test for uniqueness
         while not record_scope.where("#{slug_column} = ?", test_slug).count.zero? 
           test_slug = "#{slug_prefix}-#{(i += 1)}"
         end

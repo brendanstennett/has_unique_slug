@@ -8,6 +8,14 @@ class Standard < ActiveRecord::Base
   end
 end
 
+class StandardWithScope < ActiveRecord::Base
+  has_unique_slug :scope => :some_scope
+  
+  def self.table_name 
+    "standard" 
+  end
+end
+
 class Custom < ActiveRecord::Base
   has_unique_slug :column => :permalink, :subject => :name
   
@@ -34,12 +42,18 @@ describe HasUniqueSlug do
     teardown_db
   end
   
+  after(:each) do
+    Standard.destroy_all
+    Custom.destroy_all
+  end
+  
   it "creates a unique slug" do
     r = Standard.create! :title => "Sample Record"
     r.slug.should == "sample-record"
   end
   
   it "should add incremental column if not unique" do
+    Standard.create! :title => "Sample Record"
     2.upto 5 do |i|
       r = Standard.create! :title => "Sample Record"
       r.slug.should == "sample-record-#{i}"
@@ -47,7 +61,7 @@ describe HasUniqueSlug do
   end
   
   it "should not increment the slug if the duplicate is itself" do
-    r = Standard.last
+    r = Standard.create! :title => "Sample Record"
     slug = r.slug
     r.save.should be_true
     r.slug.should == slug
@@ -77,6 +91,22 @@ describe HasUniqueSlug do
     slug = r.permalink
     r.save.should be_true
     r.permalink.should == slug
+  end
+  
+  it "should allow two slugs with the same value if scopes differ" do
+    r = StandardWithScope.create! :title => "Sample Record", :some_scope => 1
+    r.slug.should == "sample-record"
+    
+    r = StandardWithScope.create! :title => "Sample Record", :some_scope => 2
+    r.slug.should == "sample-record"
+  end
+  
+  it "should increment the slug if two records share the same scope" do
+    r = StandardWithScope.create! :title => "Sample Record", :some_scope => 1
+    r.slug.should == "sample-record"
+    
+    r = StandardWithScope.create! :title => "Sample Record", :some_scope => 1
+    r.slug.should == "sample-record-2"
   end
   
 end

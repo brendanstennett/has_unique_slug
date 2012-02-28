@@ -18,6 +18,7 @@ def setup_db
     create_table :standard do |t|
       t.column :title, :string
       t.column :slug, :string
+      t.column :some_scope, :integer
     end
     create_table :custom do |t|
       t.column :name, :string
