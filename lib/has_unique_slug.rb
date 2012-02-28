@@ -51,13 +51,13 @@ module HasUniqueSlug
         end
       EOV
       
-      # Add find method to override ActiveRecord::Base.find.  
-      # Note: find_by_id will still work to search for record by their database id.
-      instance_eval do
-        def find(*args)
-          args.length == 1 ? where(slug_column => args.first).first : where(slug_column => args)
-        end
-      end
+      # # Add find method to override ActiveRecord::Base.find.  
+      # # Note: find_by_id will still work to search for record by their database id.
+      # instance_eval do
+      #   def find(*args)
+      #     args.length == 1 ? where(slug_column => args.first).first : where(slug_column => args)
+      #   end
+      # end
     end
     
   end

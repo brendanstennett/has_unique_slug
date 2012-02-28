@@ -32,14 +32,16 @@ Optionally, a Proc can be used instead of a column name to create the slug:
 You do not have to call parameterize on name, this will be done automatically.  (You don't even need to add dash, a space will work fine)
 
 
-You do not have to modify your controller to find records:
+Use the rails built-in convention for finding by an attribute.
+
+Note: you will have to modify this if your slug column is set to something else.
 
     class PostsController < ApplicationController
         
         # ...
         
         def show
-            @post = Post.find params[:id]
+            @post = Post.find_by_slug params[:id]
             # you may still use find_by_id to find a record by the database id if need be
         end
     end     
@@ -55,3 +57,4 @@ All the standard url helper methods will still work since `to_param`  is overrid
 - Add support for scopes
 - Add support for database versioning
 - Consider optimizing the method to ensure a unique slug
+- Add rake task for rebuildings slugs

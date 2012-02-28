@@ -7,15 +7,19 @@ require 'sqlite3'
 
 require 'has_unique_slug' # and any other gems you need
 
+RSpec.configure do |config|
+  
+end
+
 ActiveRecord::Base.establish_connection(:adapter => "sqlite3", :database => ":memory:")
 
 def setup_db
   ActiveRecord::Schema.define(:version => 1) do
-    create_table :standard_setup do |t|
+    create_table :standard do |t|
       t.column :title, :string
       t.column :slug, :string
     end
-    create_table :customized_setup do |t|
+    create_table :custom do |t|
       t.column :name, :string
       t.column :permalink, :string
     end
@@ -28,6 +32,3 @@ def teardown_db
   end
 end
 
-RSpec.configure do |config|
-  
-end

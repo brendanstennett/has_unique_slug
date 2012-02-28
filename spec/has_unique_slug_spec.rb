@@ -1,32 +1,10 @@
 require 'spec_helper'
 
-ActiveRecord::Base.establish_connection(:adapter => "sqlite3", :database => ":memory:")
-
-def setup_db
-  ActiveRecord::Schema.define(:version => 1) do
-    create_table :standards do |t|
-      t.column :title, :string
-      t.column :slug, :string
-    end
-    
-    create_table :customs do |t|
-      t.column :name, :string
-      t.column :permalink, :string
-    end
-  end
-end
-
-def teardown_db
-  ActiveRecord::Base.connection.tables.each do |t|
-    ActiveRecord::Base.connection.drop_table t
-  end
-end
-
 class Standard < ActiveRecord::Base
   has_unique_slug
   
   def self.table_name 
-    "standards" 
+    "standard" 
   end
 end
 
@@ -34,7 +12,7 @@ class Custom < ActiveRecord::Base
   has_unique_slug :column => :permalink, :subject => :name
   
   def self.table_name
-    "customs" 
+    "custom" 
   end
 end
 
@@ -42,7 +20,7 @@ class Custom2 < ActiveRecord::Base
   has_unique_slug :column => :permalink, :subject => Proc.new {|record| "zcvf #{record.name} zxvf"}
   
   def self.table_name
-    "customs" 
+    "custom" 
   end
 end
 
