@@ -1,4 +1,6 @@
 # Has Unique Slug
+[![Build Status](https://secure.travis-ci.org/HuffMoody/has_unique_slug.png)](http://travis-ci.org/HuffMoody/has_unique_slug)
+
 Generates a unique slug for use as a drop-in replacement for ids Ruby on Rails Active Record
 
 ## Install
