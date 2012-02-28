@@ -52,6 +52,11 @@ All the standard url helper methods will still work since `to_param`  is overrid
     post = Post.create! :title => "Sample Post"
     post_path(post)     # /posts/sample-post
 
+
+## Gotchas
+
+If you are adding this to an existing project that already contains records, perform the necessary setup then run something like `Post.all.each {|p| p.save }` in the rails console to populate the slug columns.
+
 ## TODO:
 
 - Add support for scopes
