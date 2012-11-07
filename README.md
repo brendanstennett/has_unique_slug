@@ -59,6 +59,14 @@ All the standard url helper methods will still work since `to_param`  is overrid
 
 If you are adding this to an existing project that already contains records, perform the necessary setup then run something like `Post.all.each {|p| p.save }` in the rails console to populate the slug columns.
 
+## Active Admin
+
+Due to the way inherited resources work, this gem will not work with Active Admin out of the box.  You can easily get around this however by adding the following line to your resource admin file:
+
+    controller do
+      defaults :finder => :find_by_slug
+    end
+
 ## TODO:
 
 - Add support for scopes
