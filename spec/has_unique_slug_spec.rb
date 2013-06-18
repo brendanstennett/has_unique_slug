@@ -59,6 +59,37 @@ describe HasUniqueSlug do
       r.slug.should == "sample-record-#{i}"
     end
   end
+
+  it "should allow a slug to be changed and updated" do
+    r = Standard.create! :title => "Sample Record"
+    r.slug = "another-slug"
+    r.save
+    r.slug.should == "another-slug"
+  end
+
+  it "should be able to manually set a slug and ensure it is unique for new records" do
+    r1 = Standard.create! :title => "Sample Record", slug: "another-slug"
+    r1.reload
+    r1.slug.should == "another-slug"
+
+    r2 = Standard.create! :title => "Sample Record", slug: "another-slug"
+    r2.reload
+    r2.slug.should == "another-slug-2"
+  end
+
+  it "should be able to manually set a slug and ensure it is unique for existing records" do
+    r1 = Standard.create! :title => "Sample Record"
+    r1.slug = "another-slug"
+    r1.save
+    r1.reload
+    r1.slug.should == "another-slug"
+
+    r2 = Standard.create! :title => "Sample Record"
+    r2.slug = "another-slug"
+    r2.save
+    r2.reload
+    r2.slug.should == "another-slug-2"
+  end
   
   it "should not increment the slug if the duplicate is itself" do
     r = Standard.create! :title => "Sample Record"
@@ -107,6 +138,11 @@ describe HasUniqueSlug do
     
     r = StandardWithScope.create! :title => "Sample Record", :some_scope => 1
     r.slug.should == "sample-record-2"
+  end
+
+  it "will not raise an exception if subject column is blank" do
+    r = Standard.create! :title => nil
+    expect { r.valid? }.to_not raise_error
   end
   
 end

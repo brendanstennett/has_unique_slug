@@ -8,7 +8,12 @@ module HasUniqueSlug
   # Builds a slug from the subject_column unless a block is specified.
   # If a block is specified, the result of the block is returned.
   def build_slug(record, subject_column)
-    ( subject_column.is_a?(Proc) ? subject_column.call(record) : record[subject_column] ).parameterize
+    if subject_column.is_a?(Proc)
+      slug = subject_column.call(record)
+    else
+      slug = record[subject_column]
+    end
+    slug.try(:parameterize) || '-'
   end
   
   module ClassMethods
@@ -58,13 +63,6 @@ module HasUniqueSlug
         end
       EOV
       
-      # # Add find method to override ActiveRecord::Base.find.  
-      # # Note: find_by_id will still work to search for record by their database id.
-      # instance_eval do
-      #   def find(*args)
-      #     args.length == 1 ? where(slug_column => args.first).first : where(slug_column => args)
-      #   end
-      # end
     end
     
   end
