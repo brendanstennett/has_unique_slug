@@ -5,7 +5,7 @@ require 'active_record'
 gem 'sqlite3'
 require 'sqlite3'
 
-require 'has_unique_slug' # and any other gems you need
+require 'has_unique_slug'
 
 RSpec.configure do |config|
   
