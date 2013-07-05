@@ -35,7 +35,7 @@ module HasUniqueSlug
         
         # Ensure the current slug is unique in the database, if not, make it unqiue
         test_slug, i = slug_prefix, 1
-        record_scope = record.new_record? ? record.class.scoped : record.class.where("id != ?", record.id)
+        record_scope = record.new_record? ? record.class.all : record.class.where("id != ?", record.id)
         
         # Add scope to uniqueness call
         unless scope_column.nil?
