@@ -83,8 +83,12 @@ Due to the way inherited resources work (a dependancy of activeadmin), this gem 
 
     # articles.rb
     
-    controller do
-      defaults :finder => :find_by_slug
+    ActiveAdmin.register Article do
+        controller do
+          defaults :finder => :find_by_slug
+        end
+        
+        # ..
     end
 
 ## TODO:
